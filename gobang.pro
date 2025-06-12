@@ -17,17 +17,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     game_gobang.cpp \
+    game_othello.cpp \
     game_piece.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
+    Common.h \
     game_gobang.h \
+    game_othello.h \
     game_piece.h \
     mainwindow.h
 
 FORMS += \
     game_gobang.ui \
+    game_othello.ui \
     game_piece.ui \
     mainwindow.ui
 

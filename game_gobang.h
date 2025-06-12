@@ -1,15 +1,13 @@
 #ifndef GAME_GOBANG_H
 #define GAME_GOBANG_H
 
-#define HeaderWidth 45
-#define Game_PieceSize 50
 #define Game_GobangSize 15
-#define Game_ColorFlag 1
-#define Game_JudgeSize 5
 
 #include <QWidget>
 #include <QMouseEvent>
 #include <vector>
+
+#include "game_piece.h"
 
 namespace Ui {
 class Game_Gobang;

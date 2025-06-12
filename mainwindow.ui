@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="Button_NewGame">
+   <widget class="QPushButton" name="Button_GameGobang">
     <property name="geometry">
      <rect>
       <x>240</x>
@@ -24,20 +24,33 @@
      </rect>
     </property>
     <property name="text">
-     <string>新游戏</string>
+     <string>五子棋</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="Button_Continue">
+   <widget class="QPushButton" name="Button_GameOthello">
     <property name="geometry">
      <rect>
       <x>240</x>
       <y>250</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>黑白棋</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>290</y>
       <width>80</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>继续</string>
+     <string>PushButton</string>
     </property>
    </widget>
   </widget>

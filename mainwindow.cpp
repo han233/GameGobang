@@ -7,16 +7,23 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     gobang = new Game_Gobang();
+    othello = new Game_Othello();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete gobang;
+    delete othello;
 }
 
 
-void MainWindow::on_Button_NewGame_clicked()
+void MainWindow::on_Button_GameGobang_clicked()
 {
     gobang->show();
+}
+
+void MainWindow::on_Button_GameOthello_clicked()
+{
+    othello->show();
 }

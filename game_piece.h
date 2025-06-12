@@ -3,6 +3,24 @@
 
 #include <QWidget>
 
+enum PieceFlag{
+    blank,
+    white,
+    black
+};
+enum direction{
+    up,
+    down,
+    left,
+    right,
+    leftup,
+    rightdown,
+    leftdown,
+    rightup
+};
+
+
+
 namespace Ui {
 class Game_Piece;
 }
@@ -15,8 +33,14 @@ public:
     explicit Game_Piece(QWidget *parent = nullptr);
     ~Game_Piece();
 
+    void setFlag(PieceFlag flag);
+    PieceFlag getFlag();
+
+    void setColor(QString color);
+
 private:
     Ui::Game_Piece *ui;
+    PieceFlag pieceflag = PieceFlag::blank;
 };
 
 #endif // GAME_PIECE_H

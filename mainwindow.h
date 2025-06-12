@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <game_gobang.h>
+#include <game_othello.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,10 +18,13 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_Button_NewGame_clicked();
+    void on_Button_GameGobang_clicked();
+
+    void on_Button_GameOthello_clicked();
 
 private:
     Ui::MainWindow *ui;
     Game_Gobang* gobang;
+    Game_Othello* othello;
 };
 #endif // MAINWINDOW_H

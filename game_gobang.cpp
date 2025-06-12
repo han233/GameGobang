@@ -1,8 +1,11 @@
 #include "game_gobang.h"
 #include "ui_game_gobang.h"
 
-#include "game_piece.h"
+#include "Common.h"
+
 #include <iostream>
+
+extern QString ColorName[];
 
 Game_Gobang::Game_Gobang(QWidget *parent) :
     QWidget(parent),
@@ -10,7 +13,6 @@ Game_Gobang::Game_Gobang(QWidget *parent) :
     PieceColor({"White","Black"})
 {
     ui->setupUi(this);
-    //ui->widget_BG->setStyleSheet("background-image: url(E:/QtProjects/棋盘.png);background-position:center;background-repeat:no-repeat;");
     for(int i = 0;i < Game_GobangSize;i++)
     {
         std::vector<int> tem;
@@ -181,6 +183,4 @@ bool Game_Gobang::GameJudge(int currFlag,int currX,int currY)
         std::cout<<PieceColor[currFlag-1].toStdString()<<"win"<<std::endl;
         return true;
     }
-
-
 }
