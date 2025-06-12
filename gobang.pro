@@ -19,6 +19,7 @@ SOURCES += \
     game_gobang.cpp \
     game_othello.cpp \
     game_piece.cpp \
+    game_test.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -27,6 +28,7 @@ HEADERS += \
     game_gobang.h \
     game_othello.h \
     game_piece.h \
+    game_test.h \
     mainwindow.h
 
 FORMS += \

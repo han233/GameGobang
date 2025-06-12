@@ -19,7 +19,6 @@ public:
 
 private slots:
     void on_Button_GameGobang_clicked();
-
     void on_Button_GameOthello_clicked();
 
 private:
