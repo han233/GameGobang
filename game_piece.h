@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-enum PieceFlag{
+enum PieceCorlor{
     blank,
     white,
     black
@@ -33,14 +33,14 @@ public:
     explicit Game_Piece(QWidget *parent = nullptr);
     ~Game_Piece();
 
-    void setFlag(PieceFlag flag);
-    PieceFlag getFlag();
+    void setFlag(PieceCorlor flag);
+    PieceCorlor getFlag();
 
     void setColor(QString color);
 
 private:
     Ui::Game_Piece *ui;
-    PieceFlag pieceflag = PieceFlag::blank;
+    PieceCorlor pieceflag = PieceCorlor::blank;
 };
 
 #endif // GAME_PIECE_H

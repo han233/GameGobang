@@ -13,7 +13,6 @@ public:
 
 signals:
     void TestOthello(int index_x,int index_y);
-
 };
 
 #endif // GAME_TEST_H

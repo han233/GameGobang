@@ -132,6 +132,9 @@ background-repeat:no-repeat;
           <height>50</height>
          </size>
         </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -139,8 +142,20 @@ background-repeat:no-repeat;
       </item>
       <item>
        <widget class="QLabel" name="labelBlackCount">
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::RightToLeft</enum>
+        </property>
         <property name="text">
-         <string>TextLabel</string>
+         <string>0</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -179,8 +194,14 @@ background-repeat:no-repeat;
       </item>
       <item>
        <widget class="QLabel" name="labelWhiteCount">
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
-         <string>TextLabel</string>
+         <string>0</string>
         </property>
        </widget>
       </item>

@@ -17,24 +17,33 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     game_gobang.cpp \
+    game_issave.cpp \
     game_othello.cpp \
     game_piece.cpp \
+    game_savedgame.cpp \
     game_test.cpp \
+    game_widget.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     Common.h \
     game_gobang.h \
+    game_issave.h \
     game_othello.h \
     game_piece.h \
+    game_savedgame.h \
     game_test.h \
+    game_widget.h \
     mainwindow.h
 
 FORMS += \
     game_gobang.ui \
+    game_issave.ui \
     game_othello.ui \
     game_piece.ui \
+    game_savedgame.ui \
+    game_widget.ui \
     mainwindow.ui
 
 # Default rules for deployment.
@@ -43,4 +52,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    ../棋盘.png
+    ../棋盘.png \
+    GameOthello.qss
+
+INCLUDEPATH += E:\boost_1_79_0
+LIBS += "-LE:\boost_1_79_0\stage\lib"

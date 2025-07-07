@@ -1,0 +1,80 @@
+QWidget#GamesWidget
+{
+	min-width:426px;
+	min-height:208px;
+	max-width:426px;
+	max-height:208px;
+	border:2px;
+	border-style:solid;
+	border-radius:15px;
+	border-color:transparent;
+}
+
+QWidget#GobangWidget,#OthelloWidget
+{
+	min-width:204px;
+	min-height:204px;
+	max-width:204px;
+	max-height:204px;
+	border:2px;
+	border-style:solid;
+	border-radius:15px;
+	border-color:transparent;
+}
+
+QPushButton#Button_GameGobang,#Button_GameOthello
+{
+	min-width:200px;
+	min-height:200px;
+	max-width:200px;
+	max-height:200px;
+	border:2px;
+	border-style:solid;
+	border-radius:15px;
+	border-color:#000000;
+}
+
+QPushButton#Button_GameGobang
+{
+	background-image: url(E:/QtProjects/gobang/Pic/Gobang200x200.jpg);
+	background-repeat: no-repeat;
+    background-position: center;
+	border:2px;
+	border-style:solid;
+	border-radius:15px;
+	border-color:#FFFFFF;
+}
+QPushButton#Button_GameGobang:hover
+{
+	background-image: url(E:/QtProjects/gobang/Pic/Gobang220x220.jpg);
+	background-repeat: no-repeat;
+    background-position: center;
+	border:2px;
+	border-radius:15px;
+	border-style:solid;
+	border-color:#00FF00;
+}
+
+QPushButton#Button_GameOthello
+{
+	background-image: url(E:/QtProjects/gobang/Pic/Othello200x200.jpg);
+	background-repeat: no-repeat;
+    background-position: center;
+	border-radius:18px;
+	border:2px;
+	border-style:solid;
+	border-radius:15px;
+	border-color:#FFFFFF;
+}
+
+QPushButton#Button_GameOthello:hover
+{
+	background-image: url(E:/QtProjects/gobang/Pic/Othello220x220.jpg);
+	background-repeat: no-repeat;
+    background-position: center;
+	border:2px;
+	border-radius:18px;
+	border-style:solid;
+	border-radius:15px;
+	border-color:#00FF00;
+}
