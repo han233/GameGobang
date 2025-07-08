@@ -41,7 +41,7 @@ namespace boost
 #define Game_GobangSize 15
 
 Game_Gobang::Game_Gobang(QWidget *parent) :
-    QWidget(parent),
+    Game_Widget(parent),
     ui(new Ui::Game_Gobang)
 {
     ui->setupUi(this);
@@ -93,8 +93,6 @@ void Game_Gobang::mousePressEvent(QMouseEvent *event)
 
         int index_x = x / Game_PieceSize;
         int index_y = y / Game_PieceSize;
-        int piece_x = index_x * Game_PieceSize;
-        int piece_y = index_y * Game_PieceSize;
 
         if(index_x < 0||index_y < 0)
         {
@@ -102,22 +100,7 @@ void Game_Gobang::mousePressEvent(QMouseEvent *event)
         }
         else
         {
-            if(GobangPieces[index_x][index_y]->getFlag() != PieceCorlor::blank)
-            {
-                std::cout<<"warn!"<<std::endl;
-                return;
-            }
-
-            // 放置棋子
-            GobangPieces[index_x][index_y]->setColor(ColorName[CurrColor]);
-            GobangPieces[index_x][index_y]->setFlag(CurrColor);
-            GobangPieces[index_x][index_y]->move(piece_x,piece_y);
-            GobangPieces[index_x][index_y]->show();
-
-            // 判断是否
-            GameJudgeEnd(GobangPieces[index_x][index_y]->getFlag(),index_x,index_y);
-
-            CurrColor = static_cast<PieceCorlor>(!static_cast<int>(CurrColor-1) + 1);
+            setPiece(index_x,index_y,CurrColor);
         }
     }
 }
@@ -137,7 +120,7 @@ void Game_Gobang::closeEvent(QCloseEvent *event)
 
     if(isSave)
     {
-        std::string filename = "E:/QtProjects/gobang/Time.json";
+        std::string filename = "E:/QtProjects/gobang/GameGobang.json";
         boost::property_tree::read_json(filename, root);
 
         for(size_t x = 0;x < GobangPieces.size();x++)
@@ -175,7 +158,7 @@ void Game_Gobang::closeEvent(QCloseEvent *event)
         else
             root.add_child(currTime, piecesNode);
 
-        std::ofstream json_file("E:/QtProjects/gobang/Time.json");
+        std::ofstream json_file("E:/QtProjects/gobang/GameGobang.json");
         if (json_file.is_open())
         {
             boost::property_tree::write_json(filename, root);
@@ -228,9 +211,9 @@ bool Game_Gobang::GameJudgeEnd(PieceCorlor currCorlor,int currX,int currY)
     for(int dir = 0;dir < direction;dir++)
     {
         int dir1 = 0,dir2 = 0;
-        for(int i = currX + DirectionVector[dir].first,j = currY + DirectionVector[dir].second;
+        for(int i = currX + DirectionVector[dir*2].first,j = currY + DirectionVector[dir*2].second;
             i >= 0 && i < Game_GobangSize && j >= 0 && j < Game_GobangSize;
-            i += DirectionVector[dir].first,j += DirectionVector[dir].second)
+            i += DirectionVector[dir*2].first,j += DirectionVector[dir*2].second)
         {
             if(GobangPieces[i][j]->getFlag() == currCorlor)
             {
@@ -240,9 +223,9 @@ bool Game_Gobang::GameJudgeEnd(PieceCorlor currCorlor,int currX,int currY)
                 break;
         }
 
-        for(int i = currX + DirectionVector[dir+1].first,j = currY + DirectionVector[dir+1].second;
+        for(int i = currX + DirectionVector[dir*2+1].first,j = currY + DirectionVector[dir*2+1].second;
             i >= 0 && i < Game_GobangSize && j >= 0 && j < Game_GobangSize;
-            i += DirectionVector[dir+1].first,j += DirectionVector[dir+1].second)
+            i += DirectionVector[dir*2+1].first,j += DirectionVector[dir*2+1].second)
         {
             if(GobangPieces[i][j]->getFlag() == currCorlor)
             {
@@ -271,11 +254,67 @@ bool Game_Gobang::GameJudgeEnd(PieceCorlor currCorlor,int currX,int currY)
     }
     return false;
 }
+void Game_Gobang::setPiece(int index_x,int index_y,PieceCorlor color)
+{
+    int piece_x = index_x * Game_PieceSize;
+    int piece_y = index_y * Game_PieceSize;
+
+    if(GobangPieces[index_x][index_y]->getFlag() != PieceCorlor::blank)
+    {
+        std::cout<<"warn!"<<std::endl;
+        return;
+    }
+
+    // 放置棋子
+    GobangPieces[index_x][index_y]->setColor(ColorName[color]);
+    GobangPieces[index_x][index_y]->setFlag(color);
+    GobangPieces[index_x][index_y]->move(piece_x,piece_y);
+    GobangPieces[index_x][index_y]->show();
+
+    if(!IsLoading)
+    {
+        // 判断是否结束
+        GameJudgeEnd(GobangPieces[index_x][index_y]->getFlag(),index_x,index_y);
+        // 更新当前颜色
+        CurrColor = static_cast<PieceCorlor>(!static_cast<int>(CurrColor-1) + 1);
+    }
+}
 
 void Game_Gobang::loadGame(boost::property_tree::ptree loadContext)
 {
+    IsLoading = true;
     for(auto i : loadContext)
     {
-        //loading
+        std::cout<<i.first<<std::endl;
+        if(i.first == "white")
+        {
+            boost::property_tree::ptree whitePieces = i.second;
+            for(auto Piece : whitePieces)
+            {
+                boost::property_tree::ptree index = Piece.second;
+                std::string cordinate = index.get<std::string>("");
+                std::vector<std::string> corXY;
+                splitCordinate(cordinate,',',corXY);
+                setPiece(std::stoi(corXY[0]),std::stoi(corXY[1]),PieceCorlor::white);
+            }
+        }
+        else
+        {
+            boost::property_tree::ptree blackPieces = i.second;
+            for(auto Piece : blackPieces)
+            {
+                boost::property_tree::ptree index = Piece.second;
+                std::string cordinate = index.get<std::string>("");
+                std::vector<std::string> corXY;
+                splitCordinate(cordinate,',',corXY);
+                setPiece(std::stoi(corXY[0]),std::stoi(corXY[1]),PieceCorlor::black);
+            }
+        }
     }
+    IsLoading = false;
+}
+
+void Game_Gobang::setLoadName(std::string name)
+{
+    LoadName = name;
 }

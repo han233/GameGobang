@@ -36,21 +36,25 @@ void Game_SavedGame::setReadFileName(const std::string name)
 void Game_SavedGame::on_buttonBox_accepted()
 {
     QListWidgetItem * item = ui->Game_SavedList->currentItem();
-    QString gameSavedName = item->text();
-
-    boost::property_tree::ptree root;
-    boost::property_tree::read_json(readFileName, root);
-
-    std::string filename = "E:/QtProjects/gobang/Time.json";
-    boost::property_tree::read_json(filename, root);
-
-    for(auto i : root)
+    if(item!=nullptr)
     {
-        if(i.first == gameSavedName.toStdString())
+        QString gameSavedName = item->text();
+
+        boost::property_tree::ptree root;
+        boost::property_tree::read_json(readFileName, root);
+
+        for(auto i : root)
         {
-            loadGameContext = i.second;
-            break;
+            if(i.first == gameSavedName.toStdString())
+            {
+                loadGameContext = i.second;
+                break;
+            }
         }
+    }
+    else
+    {
+        //请选择读档内容
     }
 }
 

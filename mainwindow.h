@@ -3,10 +3,11 @@
 
 #include <QMainWindow>
 #include <QPushButton>
-#include <game_gobang.h>
-#include <game_othello.h>
+
+#include "game_widget.h"
+#include "game_gobang.h"
+#include "game_othello.h"
 #include "game_savedgame.h"
-#include <stdlib.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -33,7 +34,7 @@ private slots:
 private:
     Ui::MainWindow*                 ui;
     QPushButton*                    currButton;
-    std::shared_ptr<QWidget>        currWidget;
+    std::shared_ptr<Game_Widget>    currWidget;
     std::shared_ptr<Game_Othello>   othello;
     std::shared_ptr<Game_Gobang>    gobang;
     std::shared_ptr<Game_SavedGame> savedGame;

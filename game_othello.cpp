@@ -11,8 +11,10 @@
 
 #include "Common.h"
 
+#include "game_issave.h"
+
 Game_Othello::Game_Othello(QWidget *parent) :
-    QWidget(parent),
+    Game_Widget(parent),
     ui(new Ui::Game_Othello),
     test(std::make_shared<Game_Test>())
 {
@@ -43,14 +45,14 @@ void Game_Othello::init()
           newPiece->setParent(this);
           tem.push_back(newPiece);
       }
-      OthelloWidget.push_back(tem);
+      OthelloPieces.push_back(tem);
     }
 
     int mid = Game_OthelloSize / 2;
-    setPiece(PieceCorlor::black,mid,mid);
-    setPiece(PieceCorlor::black,mid-1,mid-1);
-    setPiece(PieceCorlor::white,mid-1,mid);
-    setPiece(PieceCorlor::white,mid,mid-1);
+    setPiece(mid,mid,PieceCorlor::black);
+    setPiece(mid-1,mid-1,PieceCorlor::black);
+    setPiece(mid-1,mid,PieceCorlor::white);
+    setPiece(mid,mid-1,PieceCorlor::white);
 
     CurrColor = PieceCorlor::black;
     // 初始化各色棋子数量
@@ -69,21 +71,24 @@ void Game_Othello::init()
         ui->labelWhitePic->setFrameShape(QFrame::Shape::Box);
         ui->labelBlackPic->setFrameShape(QFrame::NoFrame);
     }
+
+    LoadName = "";
 }
 
-void Game_Othello::setPiece(PieceCorlor pieceColor,int pieceIndexX,int pieceIndexY)
+void Game_Othello::setPiece(int index_x,int index_y,PieceCorlor color)
 {
-    int posX = pieceIndexX * Game_PieceSize + 25;
-    int posY = pieceIndexY * Game_PieceSize + 25;
-    OthelloWidget[pieceIndexX][pieceIndexY]->setFlag(pieceColor);
-    OthelloWidget[pieceIndexX][pieceIndexY]->setColor(ColorName[pieceColor]);
-    OthelloWidget[pieceIndexX][pieceIndexY]->move(posX,posY);
-    OthelloWidget[pieceIndexX][pieceIndexY]->show();
+    int posX = index_x * Game_PieceSize + 25;
+    int posY = index_y * Game_PieceSize + 25;
+    OthelloPieces[index_x][index_y]->setFlag(color);
+    OthelloPieces[index_x][index_y]->setColor(ColorName[color]);
+    EachPieceCount[CurrColor - 1]++;
+    OthelloPieces[index_x][index_y]->move(posX,posY);
+    OthelloPieces[index_x][index_y]->show();
 }
 
 void Game_Othello::mousePressEvent(QMouseEvent *event)
 {
-    if(!GameEnded && event->buttons() == Qt::LeftButton)
+    if(!IsGameEnded && event->buttons() == Qt::LeftButton)
     {
         std::vector<QPair<int,int>> XY;
 
@@ -93,11 +98,9 @@ void Game_Othello::mousePressEvent(QMouseEvent *event)
         // 坐标位置/棋子直径
         int index_x = x / Game_PieceSize;
         int index_y = y / Game_PieceSize;
-        int piece_x = index_x * Game_PieceSize + 25;
-        int piece_y = index_y * Game_PieceSize + 25;
 
         // 点击已放置棋子的位置，进行提示
-        if(OthelloWidget[index_x][index_y]->getFlag() != PieceCorlor::blank)
+        if(OthelloPieces[index_x][index_y]->getFlag() != PieceCorlor::blank)
         {
             //std::cout<<QString("setted!").toStdString()<<std::endl;
             return;
@@ -110,19 +113,13 @@ void Game_Othello::mousePressEvent(QMouseEvent *event)
         }
 
         // 放置棋子
-        OthelloWidget[index_x][index_y]->setColor(ColorName[CurrColor]);
-        OthelloWidget[index_x][index_y]->setFlag(CurrColor);
-        //std::cout<<"set   "<<ColorName[CurrColor].toStdString()<<"++"<<std::endl;
-        EachPieceCount[CurrColor - 1]++;
-        // 设置正确的父类
-        OthelloWidget[index_x][index_y]->move(piece_x,piece_y);
-        OthelloWidget[index_x][index_y]->show();
+        setPiece(index_x,index_y,CurrColor);
 
         // 翻转
         for(size_t index = 0;index < XY.size();index++)
         {
-            OthelloWidget[XY[index].first][XY[index].second]->setColor(ColorName[CurrColor]);
-            OthelloWidget[XY[index].first][XY[index].second]->setFlag(CurrColor);
+            OthelloPieces[XY[index].first][XY[index].second]->setColor(ColorName[CurrColor]);
+            OthelloPieces[XY[index].first][XY[index].second]->setFlag(CurrColor);
             EachPieceCount[CurrColor-1]++;
             //std::cout<<"revert "<<ColorName[CurrColor].toStdString()<<"++"<<std::endl;
             EachPieceCount[(!static_cast<int>(CurrColor-1))]--;
@@ -134,23 +131,23 @@ void Game_Othello::mousePressEvent(QMouseEvent *event)
         ui->labelBlackCount->setText(QString::number(EachPieceCount[static_cast<int>(PieceCorlor::black)-1]));
         ui->labelWhiteCount->setText(QString::number(EachPieceCount[static_cast<int>(PieceCorlor::white)-1]));
 
-        GameEnded = GameJudgeEnd();
-        if(!GameEnded && GameJudgeContinue(nextColor))
+        IsGameEnded = GameJudgeEnd();
+        if(!IsGameEnded && GameJudgeContinue(nextColor))
         {
             CurrColor = nextColor;
         }
-        else if(!GameEnded && GameJudgeContinue(CurrColor))
+        else if(!IsGameEnded && GameJudgeContinue(CurrColor))
         {
             std::cout<<ColorName[nextColor].toStdString()<<"is no way!"<<ColorName[CurrColor].toStdString()<<"to be continue."<<std::endl;
         }
-        else if(!GameEnded)
+        else if(!IsGameEnded)
         {
-            GameEnded = true;
+            IsGameEnded = true;
             std::cout<<"Both of "<<ColorName[nextColor].toStdString()<<" and "<<ColorName[CurrColor].toStdString()<<" are no way!"<<std::endl;
         }
         else
         {
-            // GameEnded
+            // IsGameEnded
         }
 
         if(CurrColor == PieceCorlor::black)
@@ -166,9 +163,78 @@ void Game_Othello::mousePressEvent(QMouseEvent *event)
     }
 }
 
+void Game_Othello::closeEvent(QCloseEvent *event)
+{
+    std::shared_ptr<Game_IsSave> isSaveDia = std::make_shared<Game_IsSave>();
+    bool isSave = isSaveDia->exec();
+
+    boost::posix_time::ptime t(boost::posix_time::second_clock::universal_time());
+    std::string currTime = to_simple_string(t);
+
+    boost::property_tree::ptree root;
+    boost::property_tree::ptree piecesNode;
+    boost::property_tree::ptree whitePiecesNode;
+    boost::property_tree::ptree blackPiecesNode;
+
+    if(isSave)
+    {
+        std::string filename = "E:/QtProjects/gobang/GameOthello.json";
+        boost::property_tree::read_json(filename, root);
+
+        for(size_t x = 0;x < OthelloPieces.size();x++)
+        {
+            for(size_t y = 0;y < OthelloPieces[x].size();y++)
+            {
+                PieceCorlor color = OthelloPieces[x][y]->getFlag();
+                if(color != PieceCorlor::blank)
+                {
+                    boost::property_tree::ptree coordinate;
+                    if(color == PieceCorlor::white)
+                    {
+                        std::string cor = std::to_string(x) + "," + std::to_string(y);
+                        coordinate.put_value(cor);
+                        //coordinate.put_value(std::make_pair(x,y));
+                        whitePiecesNode.push_back(std::make_pair("",coordinate));
+                    }
+                    else
+                    {
+                        std::string cor = std::to_string(x) + "," + std::to_string(y);
+                        coordinate.put_value(cor);
+                        //coordinate.put_value(std::make_pair(x,y));
+                        blackPiecesNode.push_back(std::make_pair("",coordinate));
+                    }
+                }
+            }
+
+        }
+
+        piecesNode.add_child("white",whitePiecesNode);
+        piecesNode.add_child("black",blackPiecesNode);
+
+        if(LoadName != "")
+            root.put_child(LoadName,piecesNode);
+        else
+            root.add_child(currTime, piecesNode);
+
+        std::ofstream json_file("E:/QtProjects/gobang/GameOthello.json");
+        if (json_file.is_open())
+        {
+            boost::property_tree::write_json(filename, root);
+            json_file.close();
+            std::cout << "JSON文件写入成功!" << std::endl;
+         }
+        else
+        {
+            std::cerr << "无法打开文件进行写入!" << std::endl;
+        }
+    }
+
+     QWidget::closeEvent(event);
+}
+
 void Game_Othello::TestOthelloSlot(int index_x,int index_y)
 {
-    if(!GameEnded)
+    if(!IsGameEnded)
     {
         //qDebug()<<"\033[31mTest\033[0m";
         std::vector<QPair<int,int>> XY;
@@ -177,7 +243,7 @@ void Game_Othello::TestOthelloSlot(int index_x,int index_y)
         int piece_y = index_y * Game_PieceSize + 25;
 
         // 点击已放置棋子的位置，进行提示
-        if(OthelloWidget[index_x][index_y]->getFlag() != PieceCorlor::blank)
+        if(OthelloPieces[index_x][index_y]->getFlag() != PieceCorlor::blank)
         {
             //std::cout<<QString("setted!").toStdString()<<std::endl;
             return;
@@ -193,19 +259,19 @@ void Game_Othello::TestOthelloSlot(int index_x,int index_y)
         //std::cout<<"disconnect"<<std::endl;
         //std::cout<<"test set "<<ColorName[CurrColor].toStdString()<<" <"<<index_x<<" , "<<index_y<<">"<<std::endl;
         // 放置棋子
-        OthelloWidget[index_x][index_y]->setColor(ColorName[CurrColor]);
-        OthelloWidget[index_x][index_y]->setFlag(CurrColor);
+        OthelloPieces[index_x][index_y]->setColor(ColorName[CurrColor]);
+        OthelloPieces[index_x][index_y]->setFlag(CurrColor);
         //std::cout<<"set   "<<ColorName[CurrColor].toStdString()<<"++"<<std::endl;
         EachPieceCount[CurrColor - 1]++;
         // 设置正确的父类
-        OthelloWidget[index_x][index_y]->move(piece_x,piece_y);
-        OthelloWidget[index_x][index_y]->show();
+        OthelloPieces[index_x][index_y]->move(piece_x,piece_y);
+        OthelloPieces[index_x][index_y]->show();
 
         // 翻转
         for(size_t index = 0;index < XY.size();index++)
         {
-            OthelloWidget[XY[index].first][XY[index].second]->setColor(ColorName[CurrColor]);
-            OthelloWidget[XY[index].first][XY[index].second]->setFlag(CurrColor);
+            OthelloPieces[XY[index].first][XY[index].second]->setColor(ColorName[CurrColor]);
+            OthelloPieces[XY[index].first][XY[index].second]->setFlag(CurrColor);
             EachPieceCount[CurrColor - 1]++;
             //std::cout<<"revert "<<ColorName[CurrColor].toStdString()<<"++"<<std::endl;
             EachPieceCount[(!static_cast<int>(CurrColor-1))]--;
@@ -218,18 +284,18 @@ void Game_Othello::TestOthelloSlot(int index_x,int index_y)
         ui->labelBlackCount->setText(QString::number(EachPieceCount[static_cast<int>(PieceCorlor::black)-1]));
         ui->labelWhiteCount->setText(QString::number(EachPieceCount[static_cast<int>(PieceCorlor::white)-1]));
 
-        GameEnded = GameJudgeEnd();
-        if(!GameEnded && GameJudgeContinue(nextColor))
+        IsGameEnded = GameJudgeEnd();
+        if(!IsGameEnded && GameJudgeContinue(nextColor))
         {
             CurrColor = nextColor;
         }
-        else if(!GameEnded && GameJudgeContinue(CurrColor))
+        else if(!IsGameEnded && GameJudgeContinue(CurrColor))
         {
             std::cout<<ColorName[nextColor].toStdString()<<"is no way!"<<ColorName[CurrColor].toStdString()<<"to be continue."<<std::endl;
         }
-        else if(!GameEnded)
+        else if(!IsGameEnded)
         {
-            GameEnded = true;
+            IsGameEnded = true;
             std::cout<<"Both of "<<ColorName[nextColor].toStdString()<<" and "<<ColorName[CurrColor].toStdString()<<" are no way!"<<std::endl;
         }
         else
@@ -264,14 +330,14 @@ bool Game_Othello::GameJudgeValid(PieceCorlor currColor,int currX,int currY,std:
             i >= 0 && i < Game_OthelloSize && j >= 0 && j < Game_OthelloSize;
             i += DirectionVector[index].first,j += DirectionVector[index].second)
         {
-            if(OthelloWidget[i][j] ->getFlag() != currColor &&
-               OthelloWidget[i][j] ->getFlag() != PieceCorlor::blank)
+            if(OthelloPieces[i][j] ->getFlag() != currColor &&
+               OthelloPieces[i][j] ->getFlag() != PieceCorlor::blank)
             {
                 // 添加可以被转换的棋子
                 QPair<int,int> pair(i,j);
                 tmp.push_back(pair);
             }
-            else if(OthelloWidget[i][j]->getFlag() == PieceCorlor::blank)
+            else if(OthelloPieces[i][j]->getFlag() == PieceCorlor::blank)
             {
                 // 当遇到空白切还没遇到当前颜色的棋子时，break
                 tmp.clear();
@@ -317,8 +383,8 @@ bool Game_Othello::GameJudgeEnd()
         {
             for(size_t indexY = 0;indexY < Game_OthelloSize; indexY++)
             {
-                OthelloWidget[indexX][indexY]->setColor(ColorName[PieceCorlor::blank]);
-                OthelloWidget[indexX][indexY]->setFlag(PieceCorlor::blank);
+                OthelloPieces[indexX][indexY]->setColor(ColorName[PieceCorlor::blank]);
+                OthelloPieces[indexX][indexY]->setFlag(PieceCorlor::blank);
             }
         }
 
@@ -340,15 +406,15 @@ bool Game_Othello::GameJudgeEnd()
                 {
                     if(mincount)
                     {
-                        OthelloWidget[indexX][indexY]->setColor(ColorName[PieceCorlor::black]);
-                        OthelloWidget[indexX][indexY]->setFlag(PieceCorlor::black);
-                        OthelloWidget[Game_OthelloSize - indexX - 1][Game_OthelloSize - indexY - 1]->setColor(ColorName[PieceCorlor::white]);
-                        OthelloWidget[Game_OthelloSize - indexX - 1][Game_OthelloSize - indexY - 1]->setFlag(PieceCorlor::white);
+                        OthelloPieces[indexX][indexY]->setColor(ColorName[PieceCorlor::black]);
+                        OthelloPieces[indexX][indexY]->setFlag(PieceCorlor::black);
+                        OthelloPieces[Game_OthelloSize - indexX - 1][Game_OthelloSize - indexY - 1]->setColor(ColorName[PieceCorlor::white]);
+                        OthelloPieces[Game_OthelloSize - indexX - 1][Game_OthelloSize - indexY - 1]->setFlag(PieceCorlor::white);
                         mincount--;
                     }
 
-                    OthelloWidget[winIndexX][winIndexY]->setColor(ColorName[winCorlor]);
-                    OthelloWidget[winIndexX][winIndexY]->setFlag(winCorlor);
+                    OthelloPieces[winIndexX][winIndexY]->setColor(ColorName[winCorlor]);
+                    OthelloPieces[winIndexX][winIndexY]->setFlag(winCorlor);
                     maxcount--;
                 }
                 this->repaint();
@@ -376,7 +442,7 @@ bool Game_Othello::GameJudgeContinue(PieceCorlor nextColor)
     {
       for(int j = 0;j < Game_OthelloSize;j++)
       {
-          if(OthelloWidget[i][j]->getFlag() == PieceCorlor::blank)
+          if(OthelloPieces[i][j]->getFlag() == PieceCorlor::blank)
           {
               std::vector<QPair<int,int>> XY;
               if(GameJudgeValid(nextColor,i,j,XY) != false)
@@ -391,14 +457,45 @@ bool Game_Othello::GameJudgeContinue(PieceCorlor nextColor)
 
 void Game_Othello::on_GameSelfTest_clicked()
 {
-    while(!GameEnded)
+    while(!IsGameEnded)
         test->Game_TestOthello();
 }
 
 void Game_Othello::loadGame(boost::property_tree::ptree loadContext)
 {
+    IsLoading = true;
     for(auto i : loadContext)
     {
-        //loading
+        std::cout<<i.first<<std::endl;
+        if(i.first == "white")
+        {
+            boost::property_tree::ptree whitePieces = i.second;
+            for(auto Piece : whitePieces)
+            {
+                boost::property_tree::ptree index = Piece.second;
+                std::string cordinate = index.get<std::string>("");
+                std::vector<std::string> corXY;
+                splitCordinate(cordinate,',',corXY);
+                setPiece(std::stoi(corXY[0]),std::stoi(corXY[1]),PieceCorlor::white);
+            }
+        }
+        else
+        {
+            boost::property_tree::ptree blackPieces = i.second;
+            for(auto Piece : blackPieces)
+            {
+                boost::property_tree::ptree index = Piece.second;
+                std::string cordinate = index.get<std::string>("");
+                std::vector<std::string> corXY;
+                splitCordinate(cordinate,',',corXY);
+                setPiece(std::stoi(corXY[0]),std::stoi(corXY[1]),PieceCorlor::black);
+            }
+        }
     }
+    IsLoading = false;
+}
+
+void Game_Othello::setLoadName(std::string name)
+{
+    LoadName = name;
 }

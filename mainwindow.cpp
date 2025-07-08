@@ -88,6 +88,7 @@ void MainWindow::on_Button_Continue_clicked()
     boost::property_tree::ptree loadContext = savedGame->getLoadNameContext();
     if(isLoad)
     {
-        //currWidget.loadGame(loadContext);
+        currWidget->loadGame(loadContext);
+        currWidget->show();
     }
 }
